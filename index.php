@@ -4,6 +4,9 @@
 		* {
 			font-family: monospace;
 		}
+		.tiles:hover {
+			opacity:.5;
+		}
 	</style>
 </head>
 
@@ -14,8 +17,8 @@
 		$decrypted_board = unserialize(base64_decode($encrypted_board));
 	*/
 	
-	$columns 	= 20;
-	$rows 		= 20;
+	$columns 	= 5;
+	$rows 		= 5;
 	
 	$board = array();
 
@@ -108,9 +111,11 @@
 ?>
 	<div id="board_container"></div>
 	
-	<form>
-		<input name="solution" type="hidden" value="<?=$encrypted_board?>" />
+	<form id="board_answer" action="" method="POST">
+		<input name="board_solution" id="board_solution" type="hidden" value="<?=$encrypted_board?>" />
+		<input id="board_submit" type="submit" />
 	</form>
+
 </body>
 <script>
 	var rows			= <?=$rows;?>;
