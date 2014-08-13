@@ -33,9 +33,7 @@
 			else {
 				$board[$i][$j] = 0;
 			}
-			//echo $board[$i][$j];
 		}
-		//echo '<br />';
 	}
 
 	//Encrypting the board to be stored locally without giving away the solution
@@ -72,8 +70,6 @@
 		}
 		$row_curr = 1;
 	}
-	//print_r($row_count);
-
 	
 	$column_curr = 1;
 	$column_total =	0;
@@ -107,13 +103,12 @@
 		}
 		$column_curr = 1;
 	}
-	//print_r($column_count);
 ?>
 	<div id="board_container"></div>
 	
 	<form id="board_answer" action="" method="POST">
 		<input name="board_solution" id="board_solution" type="hidden" value="<?=$encrypted_board?>" />
-		<input id="board_submit" type="submit" />
+		<input id="board_submit" type="submit" value="Check Answer" />
 	</form>
 
 </body>

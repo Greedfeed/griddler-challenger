@@ -2,54 +2,28 @@
 
 	if($_POST)
 	{
+		$response = array();
+
 		$solution 	= unserialize(base64_decode($_POST['board_solution']));
 		$answer 	= json_decode($_POST['board_answer'], true);
 
-		print_r($answer);
-		print_r($solution);
-		
-
-		//$decrypted_board = unserialize(base64_decode($_POST['solution']));
-		//print_r( $decrypted_board );
-
-		/*$array2 = array( 
-				'1' => array( 
-					'1' => 1, 
-					'2' => 0, 
-					'3' => 0, 
-					'4' => 0, 
-					'5' => 0 
-					),
-				'2' => array( 
-					'1' => 0, 
-					'2' => 0, 
-					'3' => 0, 
-					'4' => 0, 
-					'5' => 1 
-					),
-				'3' => array( 
-					'1' => 0, 
-					'2' => 0, 
-					'3' => 0, 
-					'4' => 0, 
-					'5' => 0 
-					),
-				'4' => array( 
-					'1' => 1, 
-					'2' => 0, 
-					'3' => 0, 
-					'4' => 0, 
-					'5' => 1 
-					),
-				'5' => array( 
-					'1' => 0, 
-					'2' => 0, 
-					'3' => 0, 
-					'4' => 0, 
-					'5' => 0 
-					) 
-				);
-		*/
+		//We need to make sure the answer and the solution are atleast the same length, or we're going to have a bad time
+		if (count($answer) == count($solution)) {
+			
+			for ($i=1; $i <= count($answer);$i++) {
+				//We need to make sure the answer and the solution are atleast the same length
+				if (count($answer[$i]) == count($solution[$i])) {
+					for ($j=1; $j <= count($answer[$i]);$j++) {
+						if ($answer[$i][$j] != $solution[$i][$j]) {
+							$response[] = array(
+									'row'		=> $i,
+									'column'	=> $j
+								);
+						}
+					}
+				}
+			}
+		}
+		echo json_encode($response);
 	}
-
 ?>

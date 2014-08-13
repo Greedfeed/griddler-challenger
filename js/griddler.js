@@ -1,23 +1,27 @@
 create_layout(rows, columns);
 
+    
+document.getElementById('board_submit').addEventListener(
+    'click', check_answer, false
+);
 
-document.getElementById('board_submit').onclick = function() {
+function check_answer(event) {
 	event.preventDefault();
 
 	var board_div = document.getElementById('board');
 	var board_answer = {};
 	
 
-	for (var i = 0; i < board_div.childNodes.length; i++) {
+	for (var i = 1; i <= board_div.childNodes.length; i++) {
 		var selected_row = document.getElementById('row_'+i);
 		
-		board_answer[i+1] = {};
+		board_answer[i] = {};
 
-		for (var j = 0; j < selected_row.childNodes.length; j++) {
+		for (var j = 1; j <= selected_row.childNodes.length; j++) {
 			var selected_tile = document.getElementById('tile_'+i+'_'+j);
 			var	tile_answer = selected_tile.classList.contains('selected') ? 1 : 0;
 
-			board_answer[i+1][j+1] = tile_answer;
+			board_answer[i][j] = tile_answer;
 		}
 	}
 
@@ -30,12 +34,16 @@ document.getElementById('board_submit').onclick = function() {
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 ) {
 			if (xmlhttp.status==200) {
-				response = xmlhttp.responseText;
+				response = JSON.parse(xmlhttp.responseText);
 
-				console.log( response );
+				for(var i=0;i<response.length;i++) {
+					var row 	= response[i].row;
+					var column 	= response[i].column;
+					select_tile(row, column, 'removed');
+				}
 			}
 			else  {
-				alert('You need at least Internet Explorer 8 or better to roll dice. Embrace change you luddite.');
+				alert('You need at least Internet Explorer 8 or better to solve this puzzle. Embrace change you luddite.');
 			}
 		}
 	}
@@ -100,10 +108,10 @@ function create_board(rows, columns) {
 	var board_html = '<td rowspan="'+rows+'" colspan="'+columns+'">';
 	board_html += '<div id="board">';
 
-	for (var i=0; i < rows; i++) {
+	for (var i=1; i <= rows; i++) {
 		board_html += '<div id="row_'+i+'" class="row">';
 
-		for (var j=0; j < columns; j++) {
+		for (var j=1; j <= columns; j++) {
 			board_html += '<span id="space_'+i+'_'+j+'">';
 				board_html += '<img id="tile_'+i+'_'+j+'" class="tiles default" src="img/tile-set/default-tile.gif"  onclick="select_tile('+i+','+j+',\'selected\');"/>';
 			board_html += '</span>';
