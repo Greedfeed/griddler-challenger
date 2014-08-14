@@ -46,7 +46,7 @@ function check_answer(event) {
 					select_tile(row, column, 'incorrect');
 				}
 
-				toggle_tools('brush');
+				toggle_mode('brush');
 			}
 			else  {
 				alert('You need at least Internet Explorer 8 or better to solve this puzzle. Embrace change you luddite.');
@@ -164,7 +164,7 @@ function serialize(form_id) {
 }
 
 /**
-
+	this will toggle between the paint mode and the hammer mode
 */
 function toggle_mode(tool_action) {
 	var tool 	= document.getElementById('tool');
@@ -178,14 +178,14 @@ function toggle_mode(tool_action) {
 				tiles_class[i].className = tiles_class[i].className + " remove_tile";
 			}
 		}
-		tool_html = '<a id="tool" href="javascript:void(0);" onclick="toggle_tools(\'brush\');"><img id="tool_img" src="img/hammer.gif" /></a>'
+		tool_html = '<a id="tool" href="javascript:void(0);" onclick="toggle_mode(\'brush\');"><img id="tool_img" src="img/hammer.gif" /></a>'
 	}
 	else {
 		for (var i = 0; i < tiles_class.length; i++ ) {
 			tiles_class[i].className = tiles_class[i].className.replace(/\b remove_tile\b/,'');
 		}
 
-		tool_html = '<a id="tool" href="javascript:void(0);" onclick="toggle_tools(\'hammer\');"><img id="tool_img" src="img/brush.gif" /></a>'
+		tool_html = '<a id="tool" href="javascript:void(0);" onclick="toggle_mode(\'hammer\');"><img id="tool_img" src="img/brush.gif" /></a>'
 	}
 
 	toolset.innerHTML = tool_html;

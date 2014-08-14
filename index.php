@@ -18,8 +18,8 @@
 		$decrypted_board = unserialize(base64_decode($encrypted_board));
 	*/
 	
-	$columns 	= 8;
-	$rows 		= 8;
+	$columns 	= 4;
+	$rows 		= 4;
 	
 	$board = array();
 
