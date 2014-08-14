@@ -10,7 +10,11 @@ function check_answer(event) {
 
 	var board_div = document.getElementById('board');
 	var board_answer = {};
-	
+	var tiles_class = document.getElementsByClassName('tiles');
+
+	for (var i = 0; i < tiles_class.length; i++ ) {
+		tiles_class[i].className = tiles_class[i].className.replace(/\b remove_tile\b/,'');
+	}
 
 	for (var i = 1; i <= board_div.childNodes.length; i++) {
 		var selected_row = document.getElementById('row_'+i);
@@ -39,19 +43,19 @@ function check_answer(event) {
 				for(var i=0;i<response.length;i++) {
 					var row 	= response[i].row;
 					var column 	= response[i].column;
-					select_tile(row, column, 'removed');
+					select_tile(row, column, 'incorrect');
 				}
+
+				toggle_tools('brush');
 			}
 			else  {
 				alert('You need at least Internet Explorer 8 or better to solve this puzzle. Embrace change you luddite.');
 			}
 		}
 	}
-	
 	xmlhttp.open('POST','php/check-solution.php',true);
 	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
 	xmlhttp.send(board_post_data);
-
 }
 
 
@@ -129,9 +133,13 @@ function create_board(rows, columns) {
 	selects the tile to in the puzzle
 */
 function select_tile(row, column, type) {
-	opposite_type = type == 'default' ? 'selected' : 'default';
-
+	var opposite_type = type == 'default' ? 'selected' : 'default';
 	var selected_tile = document.getElementById('tile_'+row+'_'+column);
+
+	if (selected_tile.classList.contains('remove_tile')) {
+		type 			= 'removed';
+		opposite_type 	= 'selected';
+	}
 	selected_tile.parentNode.removeChild(selected_tile);
 	var tile_html = '<img id="tile_'+row+'_'+column+'" class="tiles '+type+'" src="img/tile-set/'+type+'-tile.gif"  onclick="select_tile('+row+','+column+',\''+opposite_type+'\');"/>';
 	document.getElementById('space_'+row+'_'+column).innerHTML = document.getElementById('space_'+row+'_'+column).innerHTML + tile_html;
@@ -153,4 +161,33 @@ function serialize(form_id) {
 
 	var data = form_string.join('&');
 	return data;
+}
+
+/**
+
+*/
+function toggle_mode(tool_action) {
+	var tool 	= document.getElementById('tool');
+	var toolset = document.getElementById('toolset');
+
+	var tiles_class = document.getElementsByClassName('tiles');
+
+	if (tool_action == 'hammer') {
+		for (var i = 0; i < tiles_class.length; i++ ) {
+			if (!tiles_class[i].classList.contains('remove_tile')) {
+				tiles_class[i].className = tiles_class[i].className + " remove_tile";
+			}
+		}
+		tool_html = '<a id="tool" href="javascript:void(0);" onclick="toggle_tools(\'brush\');"><img id="tool_img" src="img/hammer.gif" /></a>'
+	}
+	else {
+		for (var i = 0; i < tiles_class.length; i++ ) {
+			tiles_class[i].className = tiles_class[i].className.replace(/\b remove_tile\b/,'');
+		}
+
+		tool_html = '<a id="tool" href="javascript:void(0);" onclick="toggle_tools(\'hammer\');"><img id="tool_img" src="img/brush.gif" /></a>'
+	}
+
+	toolset.innerHTML = tool_html;
+
 }

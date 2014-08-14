@@ -7,6 +7,7 @@
 		.tiles:hover {
 			opacity:.5;
 		}
+
 	</style>
 </head>
 
@@ -17,15 +18,15 @@
 		$decrypted_board = unserialize(base64_decode($encrypted_board));
 	*/
 	
-	$columns 	= 5;
-	$rows 		= 5;
+	$columns 	= 8;
+	$rows 		= 8;
 	
 	$board = array();
 
 	for($i=1; $i<=$columns; $i++) {
 
 		for($j=1; $j<=$rows; $j++) {
-			$hit_roll = rand(1, 3);
+			$hit_roll = rand(1, 5);
 
 			if($hit_roll > 2) {
 				$board[$i][$j] = 1;
@@ -104,8 +105,14 @@
 		$column_curr = 1;
 	}
 ?>
+	<div>
+		<p>Current mode:
+			<div id="toolset"><a id="tool" href="javascript:void(0);" onclick="toggle_mode('hammer');"><img id="tool_img" src="img/brush.gif" /></a></div>
+		</p>
+	</div>
+
 	<div id="board_container"></div>
-	
+
 	<form id="board_answer" action="" method="POST">
 		<input name="board_solution" id="board_solution" type="hidden" value="<?=$encrypted_board?>" />
 		<input id="board_submit" type="submit" value="Check Answer" />
