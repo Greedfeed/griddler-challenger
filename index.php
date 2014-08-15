@@ -7,6 +7,9 @@
 		.tiles:hover {
 			opacity:.5;
 		}
+		#tool_img:hover {
+			opacity:.5;
+		}
 
 	</style>
 </head>
@@ -18,21 +21,21 @@
 		$decrypted_board = unserialize(base64_decode($encrypted_board));
 	*/
 	
-	$columns 	= 4;
-	$rows 		= 4;
+	$total_columns	= isset($_POST['columns'])	? $_POST['columns']	:	3;
+	$total_rows		= isset($_POST['rows'])		? $_POST['rows']	:	3;
 	
 	$board = array();
 
-	for($i=1; $i<=$columns; $i++) {
+	for($i=1; $i<=$total_rows; $i++) {
 
-		for($j=1; $j<=$rows; $j++) {
-			$hit_roll = rand(1, 5);
+		for($j=1; $j<=$total_columns; $j++) {
+			$hit_roll = rand(1, 8);
 
 			if($hit_roll > 2) {
-				$board[$i][$j] = 1;
+				$board[$j][$i] = 1;
 			}
 			else {
-				$board[$i][$j] = 0;
+				$board[$j][$i] = 0;
 			}
 		}
 	}
@@ -40,71 +43,66 @@
 	//Encrypting the board to be stored locally without giving away the solution
 	$encrypted_board = base64_encode(serialize($board));
 
-	$row_curr 	= 	1;
-	$row_total 	=	0;
-	$row_count 	= 	array();
-
-	for($j=1; $j <= $columns; $j++){
-		for($i=1; $i <= $rows; $i++) {
-			if ($board[$j][$i] == 1) {
-				$row_total = $row_total + 1;
-				$row_count[$j][$row_curr] = $row_total;
-
-				// If you are on the last row, increase the row count by 1 and reset the row total to zero
-				if($rows == $i) {
-					$row_total = 0;
-					$row_curr = $row_curr + 1;
-				}
-			}
-			else {
-				//If the row count hasn't yet created and we're on the last row, set it
-				if ( !isset($row_count[$j]) && $rows == $i ) {
-					$row_count[$j][$row_curr] = 0;
-					$row_total = 0;
-				}
-				//if the row total has a number greater than zero, reset it and move on to the next
-				elseif ($row_total > 0) {
-					$row_total = 0;
-					$row_curr = $row_curr + 1;
-				}
-			}
-		}
-		$row_curr = 1;
+	//I REALLY DO NOT UNDERSTAND MATH AND FORMULAS ENOUGH TO KNOW HOW I GOT THIS TO WORK AS TO WHY THIS WORKS
+	if ($total_columns == $total_rows) {
+		$row_count 		= hit_counter($board, 	$total_columns, $total_rows);
+		$column_count 	= hit_counter($board,	$total_columns,	$total_rows, 'flip');
+	}
+	else {
+		$row_count 		= hit_counter($board, 	$total_rows, 	$total_columns, 'flip');
+		$column_count 	= hit_counter($board,	$total_columns,	$total_rows);
 	}
 	
-	$column_curr = 1;
-	$column_total =	0;
-	$column_count = array();
+	/***
+		Sorts through two arrays and determines where the 'hits' are located in order to send the clues to the user without the answer
+		This function was developer using the dark arts and a lot of trial and error... but mostly by using the dark arts
+	*/
+	function hit_counter($board, $outer_loop, $inner_loop, $type = FALSE) {
+		$current_set 	= 	1;
+		$consecutive_hits	= 0;
+		$total_hits 	= 	array();
 
-	for($j=1; $j <= $rows; $j++) {
-		for($i=1; $i <= $columns; $i++) {
-			if ($board[$i][$j] == 1) {
-				$column_total = $column_total + 1;
-				$column_count[$j][$column_curr] = $column_total;
+		for($j=1; $j <= $outer_loop; $j++){
+			for($i=1; $i <= $inner_loop; $i++) {
+				if ($type == 'flip') {
+					$board_value =	$board[$i][$j];
+				}
+				else {
+					$board_value =	$board[$j][$i];
+				}
 
-				// If you are on the last column, increase the column count by 1 and reset the column total to zero
-				if($columns == $i) {
-					$column_total 	= 0;
-					$column_curr 	= $column_curr + 1;
+				//If we found a hit in the array...
+				if ($board_value == 1 ) {
+					$consecutive_hits = $consecutive_hits + 1;
+					$total_hits[$j][$current_set] = $consecutive_hits;
+
+					// If you are on the last inner loop, increase the set count by 1 and reset the consecutive hits to zero
+					if($inner_loop == $i) {
+						$consecutive_hits = 0;
+						$current_set = $current_set + 1;
+					}
+				}
+				else {
+					//If the inner loop count hasn't been created yet and we're on the last row, set it to 0s
+					if ( !isset($total_hits[$j]) && $inner_loop == $i ) {
+						$total_hits[$j][$current_set] = 0;
+						$consecutive_hits = 0;
+					}
+					//If the consecutive hits has a number greater than zero, reset it and move on to the next set
+					elseif ($consecutive_hits > 0) {
+						$consecutive_hits = 0;
+						$current_set = $current_set + 1;
+					}
 				}
 			}
-			else {
-				//If the column count hasn't yet created and we're on the last column, set it
-				if ( !isset($column_count[$j]) && $columns == $i ) {
-					$column_count[$j][$column_curr] = 0;
-					$column_total = 0;
-				}
-				//if the column total has a number greater than zero, reset it and move on to the next
-				elseif ($column_total > 0)
-				{
-					$column_total = 0;
-					$column_curr = $column_curr + 1;
-				}
-			}
+			$current_set = 1;
 		}
-		$column_curr = 1;
+
+		return $total_hits;
 	}
 ?>
+	<p>All boxes must be filled in or removed to count as a correct answer</p>
+
 	<div>
 		<p>Current mode:
 			<div id="toolset"><a id="tool" href="javascript:void(0);" onclick="toggle_mode('hammer');"><img id="tool_img" src="img/brush.gif" /></a></div>
@@ -115,15 +113,26 @@
 
 	<form id="board_answer" action="" method="POST">
 		<input name="board_solution" id="board_solution" type="hidden" value="<?=$encrypted_board?>" />
-		<input id="board_submit" type="submit" value="Check Answer" />
+		<input id="answer_submit" type="submit" value="Check Answer" />
+	</form>
+
+	<form id="create_board" action="" method="POST">
+		<select name="rows">
+			<option  value="5">	 5x5</option>
+			<option value="10">10x10</option>
+			<option value="15">15x15</option>
+			<option value="20">20x20</option>
+			<option value="25">25x25</option>
+		</select>
+		<input id="create_submit" type="submit" value="Create Board" />
 	</form>
 
 </body>
 <script>
-	var rows			= <?=$rows;?>;
-	var columns			= <?=$columns;?>;
-	var row_count		= <?=json_encode($row_count)?>;
+	var rows			= <?=$total_rows;?>;
+	var columns			= <?=$total_columns;?>;
 	var column_count	= <?=json_encode($column_count)?>;
+	var row_count		= <?=json_encode($row_count)?>;
 	var current_mode	= 'brush';
 </script>
 

@@ -1,7 +1,7 @@
 create_layout(rows, columns);
 
     
-document.getElementById('board_submit').addEventListener(
+document.getElementById('answer_submit').addEventListener(
     'click', check_answer, false
 );
 
@@ -11,6 +11,7 @@ function check_answer(event) {
 	var board_div = document.getElementById('board');
 	var board_answer = {};
 	var tiles_class = document.getElementsByClassName('tiles');
+	var total_wrong = 0;
 
 	for (var i = 1; i <= board_div.childNodes.length; i++) {
 		var selected_row = document.getElementById('row_'+i);
@@ -20,6 +21,9 @@ function check_answer(event) {
 		for (var j = 1; j <= selected_row.childNodes.length; j++) {
 			var selected_tile = document.getElementById('tile_'+i+'_'+j);
 			var	tile_answer = selected_tile.classList.contains('selected') ? 1 : 0;
+			if (selected_tile.classList.contains('default') ) {
+					select_tile(i, j, 'incorrect');
+			}
 
 			board_answer[i][j] = tile_answer;
 		}
@@ -42,7 +46,14 @@ function check_answer(event) {
 					select_tile(row, column, 'incorrect');
 				}
 
-				//toggle_mode('brush');
+				total_wrong	= document.getElementsByClassName('incorrect').length;
+				
+				if (total_wrong > 0) {
+					alert('dis many wrong: '+ total_wrong);
+				}
+				else {
+					alert('dis many wrong: '+ total_wrong);
+				}
 			}
 			else  {
 				alert('You need at least Internet Explorer 8 or better to solve this puzzle. Embrace change you luddite.');
