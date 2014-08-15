@@ -12,10 +12,6 @@ function check_answer(event) {
 	var board_answer = {};
 	var tiles_class = document.getElementsByClassName('tiles');
 
-	for (var i = 0; i < tiles_class.length; i++ ) {
-		tiles_class[i].className = tiles_class[i].className.replace(/\b remove_tile\b/,'');
-	}
-
 	for (var i = 1; i <= board_div.childNodes.length; i++) {
 		var selected_row = document.getElementById('row_'+i);
 		
@@ -38,7 +34,7 @@ function check_answer(event) {
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 ) {
 			if (xmlhttp.status==200) {
-				response = JSON.parse(xmlhttp.responseText);
+				var response = JSON.parse(xmlhttp.responseText);
 
 				for(var i=0;i<response.length;i++) {
 					var row 	= response[i].row;
@@ -46,7 +42,7 @@ function check_answer(event) {
 					select_tile(row, column, 'incorrect');
 				}
 
-				toggle_mode('brush');
+				//toggle_mode('brush');
 			}
 			else  {
 				alert('You need at least Internet Explorer 8 or better to solve this puzzle. Embrace change you luddite.');
@@ -133,13 +129,26 @@ function create_board(rows, columns) {
 	selects the tile to in the puzzle
 */
 function select_tile(row, column, type) {
-	var opposite_type = type == 'default' ? 'selected' : 'default';
 	var selected_tile = document.getElementById('tile_'+row+'_'+column);
+	var opposite_type = type == 'default' ? 'selected' : 'default';
 
-	if (selected_tile.classList.contains('remove_tile')) {
-		type 			= 'removed';
-		opposite_type 	= 'selected';
+	//only apply special rules if we aren't marking a tile incorrect
+	if (type != 'incorrect') {
+		if (current_mode == 'hammer') {
+			var type = type == 'selected' ? 'removed' : 'default';
+			if (current_mode == 'hammer' && selected_tile.classList.contains('selected')) {
+				type = 'removed';
+				opposite_type = 'default'; 
+			}
+		}
+
+		if (current_mode == 'brush' && selected_tile.classList.contains('removed')) {
+			type = 'selected';
+			opposite_type = 'default'; 
+		}
 	}
+
+
 	selected_tile.parentNode.removeChild(selected_tile);
 	var tile_html = '<img id="tile_'+row+'_'+column+'" class="tiles '+type+'" src="img/tile-set/'+type+'-tile.gif"  onclick="select_tile('+row+','+column+',\''+opposite_type+'\');"/>';
 	document.getElementById('space_'+row+'_'+column).innerHTML = document.getElementById('space_'+row+'_'+column).innerHTML + tile_html;
@@ -166,26 +175,17 @@ function serialize(form_id) {
 /**
 	this will toggle between the paint mode and the hammer mode
 */
-function toggle_mode(tool_action) {
+function toggle_mode(mode) {
 	var tool 	= document.getElementById('tool');
 	var toolset = document.getElementById('toolset');
 
-	var tiles_class = document.getElementsByClassName('tiles');
-
-	if (tool_action == 'hammer') {
-		for (var i = 0; i < tiles_class.length; i++ ) {
-			if (!tiles_class[i].classList.contains('remove_tile')) {
-				tiles_class[i].className = tiles_class[i].className + " remove_tile";
-			}
-		}
-		tool_html = '<a id="tool" href="javascript:void(0);" onclick="toggle_mode(\'brush\');"><img id="tool_img" src="img/hammer.gif" /></a>'
+	if (mode == 'hammer') {
+		tool_html = '<a id="tool" href="javascript:void(0);" onclick="toggle_mode(\'brush\');"><img id="tool_img" src="img/hammer.gif" /></a>';
+		current_mode =	'hammer';
 	}
 	else {
-		for (var i = 0; i < tiles_class.length; i++ ) {
-			tiles_class[i].className = tiles_class[i].className.replace(/\b remove_tile\b/,'');
-		}
-
-		tool_html = '<a id="tool" href="javascript:void(0);" onclick="toggle_mode(\'hammer\');"><img id="tool_img" src="img/brush.gif" /></a>'
+		tool_html = '<a id="tool" href="javascript:void(0);" onclick="toggle_mode(\'hammer\');"><img id="tool_img" src="img/brush.gif" /></a>';
+		current_mode =	'brush';
 	}
 
 	toolset.innerHTML = tool_html;

@@ -124,6 +124,7 @@
 	var columns			= <?=$columns;?>;
 	var row_count		= <?=json_encode($row_count)?>;
 	var column_count	= <?=json_encode($column_count)?>;
+	var current_mode	= 'brush';
 </script>
 
 <script src="js/griddler.js"></script>
