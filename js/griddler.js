@@ -75,7 +75,7 @@ function create_layout(rows, columns) {
 		table_html += '<td>&nbsp;</td>';
 
 		for (var i=1; i<=Object.keys(column_count).length; i++) {
-			table_html += '<td id="hint_col_'+i+'">';
+			table_html += '<td id="hint_col_'+i+'" class="hint_col">';
 			for (var j=1; j<=Object.keys(column_count[i]).length; j++) {
 				if(column_count[i][j] != 0) {
 					table_html += column_count[i][j] + '<br />';
@@ -91,7 +91,7 @@ function create_layout(rows, columns) {
 
 	for (var i=1; i<=Object.keys(row_count).length; i++) {
 		table_html += '<tr id="hint_row_'+i+'">';
-			table_html += '<td>';
+			table_html += '<td class="hint_row">';
 			for (var j=1; j<=Object.keys(row_count[i]).length; j++) {
 				if(row_count[i][j] != 0) {
 					table_html += row_count[i][j];
@@ -100,8 +100,8 @@ function create_layout(rows, columns) {
 					table_html += '&nbsp;';
 				}
 			}
-			table_html += '</tr>';
-		table_html += '</td>';
+			table_html += '</td>';
+		table_html += '</tr>';
 	}
 	table_html += '</table>';
 
