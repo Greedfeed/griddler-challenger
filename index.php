@@ -56,6 +56,14 @@
 				<option value="20">20x20</option>
 				<option value="25">25x25</option>
 			</select>
+			<select name="board_difficulty">
+				<option value="10">Very Easy</option>
+				<option value="8">Easy</option>
+				<option value="6" selected="selected">Moderate</option>
+				<option value="4">Challenging</option>
+				<option value="3">Impossible</option>
+			</select>
+
 			<input id="create_submit" type="submit" value="Create Board" />
 		</form>
 	</div>

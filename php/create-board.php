@@ -2,13 +2,15 @@
 	
 	$total_columns	= isset($_POST['rows_columns'])		? $_POST['rows_columns']	:	5;
 	$total_rows		= isset($_POST['rows_columns'])		? $_POST['rows_columns']	:	5;
+	$difficulty		= isset($_POST['board_difficulty'])	? $_POST['board_difficulty']:	6;
+
 	
 	$board = array();
 
 	for($i=1; $i<=$total_rows; $i++) {
 
 		for($j=1; $j<=$total_columns; $j++) {
-			$hit_roll = rand(1, 6);
+			$hit_roll = rand(1, $difficulty);
 
 			if($hit_roll > 2) {
 				$board[$j][$i] = 1;

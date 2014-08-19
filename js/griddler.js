@@ -1,5 +1,5 @@
 create_layout(rows, columns);
-
+	
     
 document.getElementById('answer_submit').addEventListener(
     'click', check_answer, false
@@ -117,14 +117,14 @@ function create_layout(rows, columns) {
 function create_board(rows, columns) {
 
 	var board_html = '<td rowspan="'+rows+'" colspan="'+columns+'">';
-	board_html += '<div id="board">';
+	board_html += '<div id="board" oncontextmenu="return false;">';
 
 	for (var i=1; i <= rows; i++) {
 		board_html += '<div id="row_'+i+'" class="row">';
 
 		for (var j=1; j <= columns; j++) {
 			board_html += '<span id="space_'+i+'_'+j+'">';
-				board_html += '<img id="tile_'+i+'_'+j+'" class="tiles default" src="img/tile-set/default-tile.gif"  onclick="select_tile('+i+','+j+',\'selected\');"/>';
+				board_html += '<img id="tile_'+i+'_'+j+'" class="tiles default" src="img/tile-set/default-tile.gif" onmousedown="select_tile('+i+','+j+',\'selected\', event);return false;"/>';
 			board_html += '</span>';
 		}
 
@@ -136,12 +136,19 @@ function create_board(rows, columns) {
 }
 
 
+
 /**
 	selects the tile to in the puzzle
 */
-function select_tile(row, column, type) {
+function select_tile(row, column, type, click_event) {
 	var selected_tile = document.getElementById('tile_'+row+'_'+column);
 	var opposite_type = type == 'default' ? 'selected' : 'default';
+	var click_event = click_event || window.event;
+
+	//if right click was used, toggle the results
+	if ((click_event.which && click_event.which == 3) || (click_event.button && click_event.button == 2)) {
+		toggle_mode();
+	}
 
 	//only apply special rules if we aren't marking a tile incorrect
 	if (type != 'incorrect') {
@@ -159,10 +166,15 @@ function select_tile(row, column, type) {
 		}
 	}
 
+	//if right click was used, toggle the results back
+	if ((click_event.which && click_event.which == 3) || (click_event.button && click_event.button == 2)) {
+		toggle_mode();
+	}
 
 	selected_tile.parentNode.removeChild(selected_tile);
-	var tile_html = '<img id="tile_'+row+'_'+column+'" class="tiles '+type+'" src="img/tile-set/'+type+'-tile.gif"  onclick="select_tile('+row+','+column+',\''+opposite_type+'\');"/>';
+	var tile_html = '<img id="tile_'+row+'_'+column+'" class="tiles '+type+'" src="img/tile-set/'+type+'-tile.gif"  onmousedown="select_tile('+row+','+column+',\''+opposite_type+'\', event);"/>';
 	document.getElementById('space_'+row+'_'+column).innerHTML = document.getElementById('space_'+row+'_'+column).innerHTML + tile_html;
+	return false;
 }
 
 
@@ -187,6 +199,19 @@ function serialize(form_id) {
 	this will toggle between the paint mode and the hammer mode
 */
 function toggle_mode(mode) {
+
+	if (typeof mode !== 'undefined') {
+		var mode = mode;
+	}
+	else  {
+		if (current_mode == 'brush') {
+			mode = 'hammer';
+		}
+		else {
+			mode = 'brush';
+		}
+	}
+
 	var tool 	= document.getElementById('tool');
 	var toolset = document.getElementById('toolset');
 
