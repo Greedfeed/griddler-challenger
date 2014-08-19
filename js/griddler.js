@@ -22,7 +22,7 @@ function check_answer(event) {
 			var selected_tile = document.getElementById('tile_'+i+'_'+j);
 			var	tile_answer = selected_tile.classList.contains('selected') ? 1 : 0;
 			if (selected_tile.classList.contains('default') ) {
-					select_tile(i, j, 'incorrect');
+					select_tile(i, j, 'incorrect', event);
 			}
 
 			board_answer[i][j] = tile_answer;
@@ -43,7 +43,7 @@ function check_answer(event) {
 				for(var i=0;i<response.length;i++) {
 					var row 	= response[i].row;
 					var column 	= response[i].column;
-					select_tile(row, column, 'incorrect');
+					select_tile(row, column, 'incorrect', event);
 				}
 
 				total_wrong	= document.getElementsByClassName('incorrect').length;
@@ -124,7 +124,7 @@ function create_board(rows, columns) {
 
 		for (var j=1; j <= columns; j++) {
 			board_html += '<span id="space_'+i+'_'+j+'">';
-				board_html += '<img id="tile_'+i+'_'+j+'" class="tiles default" src="img/tile-set/default-tile.gif" onmousedown="select_tile('+i+','+j+',\'selected\', event);return false;"/>';
+				board_html += '<img id="tile_'+i+'_'+j+'" class="tiles default" src="img/tile-set/default-tile.gif" onmousedown="select_tile('+i+','+j+',\'selected\', event);"/>';
 			board_html += '</span>';
 		}
 
